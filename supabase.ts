@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Listing, UserProfile } from './types';
 
+// Safely access environment variables with fallbacks
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
 
@@ -67,7 +68,6 @@ export const createListing = async (listing: any) => {
 };
 
 export const updateListing = async (id: string, updates: any) => {
-  // CRITICAL: We MUST remove system fields before updating
   const { id: _, created_at: __, owner_id: ___, ...cleanUpdates } = updates;
   const { data, error } = await supabase
     .from('listings')

@@ -28,6 +28,10 @@
       .safe-top { padding-top: env(safe-area-inset-top); }
       .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
+    <!-- Shim for process.env to ensure compatibility with library expectations -->
+    <script>
+      window.process = window.process || { env: {} };
+    </script>
     <script type="importmap">
     {
       "imports": {
@@ -42,5 +46,7 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Entry point for the React application -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
