@@ -1,24 +1,13 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+import { createClient } from '@supabase/supabase-js';
 import { Listing, UserProfile } from './types';
 
-// Safely access variables from the global process shim or real process.env
-const getEnv = (key: string, fallback: string) => {
-  try {
-    // @ts-ignore
-    return (window.process?.env?.[key] || process?.env?.[key] || fallback);
-  } catch {
-    return fallback;
-  }
-};
-
-const supabaseUrl = getEnv('VITE_SUPABASE_URL', 'https://zhjjexphfqnwpstzuqlr.supabase.co');
-const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY');
+// Use type casting to any to bypass the 'env' property check on import.meta in environments where types aren't fully configured
+const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
+const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-/**
- * AUTH & PROFILE OPERATIONS
- */
 export const createProfile = async (profile: UserProfile) => {
   if (!supabase) return;
   const { error } = await supabase
@@ -45,9 +34,6 @@ export const getProfile = async (userId: string) => {
   return data;
 };
 
-/**
- * DATABASE OPERATIONS
- */
 export const getListings = async () => {
   const { data, error } = await supabase
     .from('listings')
@@ -95,9 +81,6 @@ export const deleteListing = async (id: string) => {
   if (error) throw new Error(error.message);
 };
 
-/**
- * CHAT OPERATIONS
- */
 export const sendMessage = async (senderId: string, receiverId: string, listingId: string, content: string) => {
   const { data, error } = await supabase
     .from('messages')
@@ -128,9 +111,6 @@ export const getMyConversations = async (userId: string) => {
   return data;
 };
 
-/**
- * BOOKMARK OPERATIONS
- */
 export const toggleBookmark = async (userId: string, listingId: string) => {
   const { data: existing } = await supabase
     .from('bookmarks')
@@ -157,9 +137,6 @@ export const getBookmarks = async (userId: string) => {
   return data.map(b => b.listing_id);
 };
 
-/**
- * STORAGE OPERATIONS
- */
 export const uploadImage = async (file: File) => {
   const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;

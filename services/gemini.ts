@@ -1,9 +1,8 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize the Google GenAI SDK with the API key from environment variables.
-// Always use the process.env.API_KEY directly.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+// Initialize Gemini API client correctly using the mandatory process.env.API_KEY variable
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generatePropertyDescription = async (details: {
   title: string;
@@ -19,12 +18,12 @@ export const generatePropertyDescription = async (details: {
   Keep it concise but highlight the benefits of the location and the amenities.`;
 
   try {
-    // Generate content using gemini-3-flash-preview for general text generation tasks.
+    // Calling generateContent with the model name and prompt directly
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    // Accessing .text property directly as per the latest SDK standards.
+    // Accessing the .text property of GenerateContentResponse
     return response.text;
   } catch (error) {
     console.error("Gemini Error:", error);
@@ -36,15 +35,15 @@ export const getSmartAssistance = async (query: string, currentContext?: string)
   const prompt = `You are the UrbanNest Smart Assistant, an expert in the Bangladesh real estate market. 
   User query: "${query}"
   Context of current listings: ${currentContext || 'Multiple premium apartments in Dhaka, Chittagong, and Sylhet.'}
-  Help the user with their rental search or owner listing questions. Be polite, helpful, and specific to the Bangladesh context (Dhaka areas like Gulshan, Banani, Dhanmondi, etc.).`;
+  Help the user with their rental search or owner listing questions. Be polite, helpful, and specific to the Bangladesh context.`;
 
   try {
-    // Using gemini-3-flash-preview for helpful assistant tasks.
+    // Calling generateContent with the model name and prompt directly
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    // Accessing .text property directly.
+    // Accessing the .text property of GenerateContentResponse
     return response.text;
   } catch (error) {
     console.error("Gemini Assistant Error:", error);
