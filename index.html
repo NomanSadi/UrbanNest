@@ -15,6 +15,7 @@
         font-family: 'Inter', sans-serif;
         background-color: #F8FAF9;
         -webkit-tap-highlight-color: transparent;
+        margin: 0;
       }
       .bg-urban-green { background-color: #2D5A47; }
       .text-urban-green { color: #2D5A47; }
@@ -27,10 +28,32 @@
       
       .safe-top { padding-top: env(safe-area-inset-top); }
       .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
     </style>
     <!-- Shim for process.env to ensure compatibility with library expectations -->
     <script>
-      window.process = window.process || { env: {} };
+      window.process = { 
+        env: {
+          API_KEY: "",
+          VITE_SUPABASE_URL: "https://zhjjexphfqnwpstzuqlr.supabase.co",
+          VITE_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY"
+        } 
+      };
+      // Allow overriding from actual process.env if available (Vite/Node)
+      if (typeof process !== 'undefined' && process.env) {
+        Object.assign(window.process.env, process.env);
+      }
     </script>
     <script type="importmap">
     {
@@ -45,8 +68,15 @@
     </script>
   </head>
   <body>
+    <div id="boot-loader">
+      <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #2D5A47; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <p style="margin-top: 16px; font-weight: 600; color: #2D5A47;">UrbanNest is starting...</p>
+    </div>
     <div id="root"></div>
     <!-- Entry point for the React application -->
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
+    <style>
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
   </body>
 </html>

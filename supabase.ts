@@ -1,9 +1,18 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Listing, UserProfile } from './types';
 
-// Safely access environment variables with fallbacks
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
+// Safely access variables from the global process shim or real process.env
+const getEnv = (key: string, fallback: string) => {
+  try {
+    // @ts-ignore
+    return (window.process?.env?.[key] || process?.env?.[key] || fallback);
+  } catch {
+    return fallback;
+  }
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL', 'https://zhjjexphfqnwpstzuqlr.supabase.co');
+const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY');
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
