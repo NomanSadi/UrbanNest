@@ -45,87 +45,73 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   };
 
   return (
-    <div className="bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group border border-gray-100 flex flex-col h-full max-w-[540px] mx-auto w-full">
-      {/* Optimized Image Height */}
-      <div className="relative h-[200px] overflow-hidden">
+    <div className="bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-gray-100 flex flex-col h-full max-w-[480px] mx-auto w-full">
+      {/* Visual Section */}
+      <div className="relative h-[220px] overflow-hidden">
         <img 
           src={listing.thumbnail} 
           alt={listing.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         
-        {/* Top Location Badge */}
         <div className="absolute top-4 left-4">
-          <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-black text-gray-800 shadow-sm border border-white/10">
+          <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-2 text-[9px] font-semibold text-gray-900 shadow-sm border border-white/10 uppercase tracking-widest">
              <i className="fas fa-location-dot text-urban-green"></i> {listing.area}
           </div>
         </div>
 
-        {/* Floating Bookmark */}
         <div className="absolute top-4 right-4">
           <button 
             onClick={handleBookmark}
-            className={`w-10 h-10 rounded-xl bg-white/95 backdrop-blur-md flex items-center justify-center transition-all shadow-md active:scale-90 ${isBookmarked ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
+            className={`w-9 h-9 rounded-xl bg-white/95 backdrop-blur-md flex items-center justify-center transition-all shadow-md active:scale-90 ${isBookmarked ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
           >
-            <i className={`${isBookmarked ? 'fas' : 'far'} fa-heart text-lg`}></i>
+            <i className={`${isBookmarked ? 'fas' : 'far'} fa-heart text-sm`}></i>
           </button>
         </div>
       </div>
 
-      {/* Content Body - Wider and Shorter padding */}
-      <div className="p-6 md:p-7 flex flex-col flex-1">
-        <div className="flex items-center gap-2 mb-2">
-           <span className="text-[9px] font-black text-urban-green uppercase tracking-[0.2em] bg-urban-green/5 px-3 py-1 rounded-lg">
-             {listing.category}
-           </span>
-        </div>
-        
-        <h3 className="font-black text-xl text-gray-900 mb-1 leading-tight group-hover:text-urban-green transition-colors line-clamp-1">
+      {/* Content Section - Compacted Padding */}
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="font-semibold text-xl text-gray-900 mb-2 leading-tight tracking-tight group-hover:text-urban-green transition-colors line-clamp-1">
           {listing.title}
         </h3>
         
-        <p className="text-gray-400 text-[11px] font-medium mb-4 line-clamp-1 leading-relaxed">
-          {listing.description || "Modern property in a prime urban location."}
+        <p className="text-gray-400 text-[13px] font-medium mb-5 line-clamp-2 leading-relaxed">
+          {listing.description || "Modern property featuring premium finishes in a prime location."}
         </p>
         
-        {/* Compact Feature Tags Row */}
-        <div className="flex items-center justify-between bg-gray-50/50 rounded-xl p-2.5 mb-5 border border-gray-100/50">
-          <div className="flex items-center gap-1.5">
-            <i className="fas fa-bed text-[10px] text-urban-green"></i>
-            <span className="text-[10px] font-black text-gray-900">{listing.bedrooms} <span className="text-gray-400 text-[8px]">Bed</span></span>
+        {/* Modern Horizontal Features List */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mb-6">
+          <div className="flex items-center gap-2 min-w-max">
+            <i className="fas fa-bed text-urban-green text-[12px]"></i>
+            <span className="text-[11px] font-semibold text-gray-600">{listing.bedrooms} Bedroom</span>
           </div>
-          <div className="w-px h-3 bg-gray-200"></div>
-          <div className="flex items-center gap-1.5">
-            <i className="fas fa-bath text-[10px] text-urban-green"></i>
-            <span className="text-[10px] font-black text-gray-900">{listing.bathrooms} <span className="text-gray-400 text-[8px]">Bath</span></span>
+          <div className="flex items-center gap-2 min-w-max">
+            <i className="fas fa-bath text-urban-green text-[12px]"></i>
+            <span className="text-[11px] font-semibold text-gray-600">{listing.bathrooms} Bathroom</span>
           </div>
-          <div className="w-px h-3 bg-gray-200"></div>
-          <div className="flex items-center gap-1.5">
-            <i className="fas fa-door-open text-[10px] text-urban-green"></i>
-            <span className="text-[10px] font-black text-gray-900">{listing.balconies || 0} <span className="text-gray-400 text-[8px]">Balc</span></span>
+          <div className="flex items-center gap-2 min-w-max">
+            <i className="fas fa-kaaba text-urban-green text-[12px]"></i>
+            <span className="text-[11px] font-semibold text-gray-600">{listing.balconies || 0} Balcony</span>
           </div>
-          <div className="w-px h-3 bg-gray-200"></div>
-          <div className="flex items-center gap-1.5">
-            <i className="fas fa-expand text-[10px] text-urban-green"></i>
-            <span className="text-[10px] font-black text-gray-900">{listing.sqft} <span className="text-gray-400 text-[8px]">Sqft</span></span>
+          <div className="flex items-center gap-2 min-w-max">
+            <i className="fas fa-expand text-urban-green text-[12px]"></i>
+            <span className="text-[11px] font-semibold text-gray-600">{listing.sqft?.toLocaleString()} Square Feet</span>
           </div>
         </div>
 
-        {/* Pricing & "View Details" - Side by Side */}
+        {/* Action Row */}
         <div className="mt-auto flex items-center justify-between gap-4 pt-4 border-t border-gray-50">
-          <div className="flex flex-col min-w-fit">
-             <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Monthly Rent</span>
-             <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-black text-gray-900 tracking-tighter">৳{listing.rent.toLocaleString()}</span>
-                <span className="text-gray-300 font-black text-[9px]">/MO</span>
-             </div>
+          <div className="flex flex-col">
+             <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Rent</span>
+             <span className="text-2xl font-semibold text-gray-900 tracking-tight">৳{listing.rent.toLocaleString()}</span>
           </div>
 
           <Link 
             to={`/listing/${listing.id}`}
-            className="flex-1 bg-urban-green text-white py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-urban-green/90 active:scale-[0.97] transition-all shadow-lg shadow-urban-green/20 font-black text-[10px] uppercase tracking-widest whitespace-nowrap"
+            className="px-6 py-3 bg-urban-green text-white rounded-xl flex items-center justify-center gap-2 hover:bg-urban-green/90 active:scale-[0.97] transition-all shadow-md font-semibold text-[10px] uppercase tracking-widest whitespace-nowrap"
           >
-            View Details
+            Details <i className="fas fa-arrow-right text-[8px] opacity-60"></i>
           </Link>
         </div>
       </div>
