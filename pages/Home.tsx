@@ -62,7 +62,7 @@ const Home: React.FC = () => {
 
           <div className="relative max-w-3xl mx-auto group">
             <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-3 text-white/30 group-focus-within:text-white transition-colors">
-               <i className="fas fa-search text-xl"></i>
+               <i className="fas fa-magnifying-glass text-xl"></i>
             </div>
             <input 
               type="text" 
@@ -71,8 +71,8 @@ const Home: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-3.5 bg-white text-urban-green font-bold rounded-2xl hover:scale-105 active:scale-95 transition shadow-lg text-sm md:text-base">
-               Search
+            <button className="absolute right-2.5 top-1/2 -translate-y-1/2 w-13 h-13 md:w-15 md:h-15 bg-white text-urban-green rounded-[22px] flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl">
+               <i className="fas fa-search text-lg md:text-xl"></i>
             </button>
           </div>
 
@@ -128,11 +128,11 @@ const Home: React.FC = () => {
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8">
               {[1, 2, 3].map(i => <div key={i} className="h-[400px] bg-gray-50 rounded-[40px] animate-pulse"></div>)}
             </div>
           ) : filteredListings.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8">
               {filteredListings.map(listing => (
                 <ListingCard key={listing.id} listing={listing} />
               ))}
