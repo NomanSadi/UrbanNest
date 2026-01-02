@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getListings } from '../supabase';
 import ListingCard from '../components/ListingCard';
@@ -110,40 +109,42 @@ const Home: React.FC = () => {
       </div>
 
       {/* Dynamic Content */}
-      <main className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-20">
+      <main className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-24">
         <section className="mb-20">
-          <div className="flex items-end justify-between mb-10">
+          <div className="flex items-end justify-between mb-12 px-4">
             <div className="space-y-2">
-              <span className="text-urban-green text-[10px] font-black uppercase tracking-[0.2em]">
-                {activeCategory !== 'All' ? `${activeCategory} Listings` : 'Featured Properties'}
+              <span className="text-urban-green text-[10px] font-black uppercase tracking-[0.3em]">
+                {activeCategory !== 'All' ? `${activeCategory} Listings` : 'Featured Collection'}
               </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900">
-                {activeCategory === 'Budget' ? 'Rentals under ৳15k' : 'Rentals Near You'}
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                {activeCategory === 'Budget' ? 'Best Values under ৳15k' : 'Rentals Near You'}
               </h2>
             </div>
             {activeCategory !== 'All' && (
-              <button onClick={() => setActiveCategory('All')} className="text-xs font-bold text-gray-400 hover:text-urban-green">
-                Reset Filters
+              <button onClick={() => setActiveCategory('All')} className="text-[10px] font-black text-gray-400 hover:text-urban-green uppercase tracking-widest bg-gray-100 px-4 py-2 rounded-xl transition">
+                Reset
               </button>
             )}
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map(i => <div key={i} className="h-80 bg-gray-100 rounded-3xl animate-pulse"></div>)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+              {[1, 2, 3].map(i => <div key={i} className="h-[400px] bg-gray-50 rounded-[40px] animate-pulse"></div>)}
             </div>
           ) : filteredListings.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
               {filteredListings.map(listing => (
                 <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-200">
-              <div className="text-4xl mb-4">🏠</div>
-              <h3 className="text-xl font-bold text-gray-900">No matching homes found</h3>
-              <p className="text-gray-500 max-w-xs mx-auto mt-2">Try adjusting your search terms or area to see more listings.</p>
-              <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="mt-6 text-urban-green font-bold hover:underline">Clear all search</button>
+            <div className="text-center py-32 bg-gray-50 rounded-[50px] border-2 border-dashed border-gray-100">
+              <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+                 <i className="fas fa-house-chimney-crack text-3xl text-gray-200"></i>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-3">No matching homes found</h3>
+              <p className="text-gray-400 max-w-sm mx-auto mb-10 text-sm font-medium">Try adjusting your search criteria or explore other areas in the city.</p>
+              <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="bg-urban-green text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-urban-green/20">Clear Search</button>
             </div>
           )}
         </section>

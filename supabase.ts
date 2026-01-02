@@ -1,23 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { Listing, UserProfile } from './types';
 
-// Ultra-defensive environment variable access
-const getEnvVar = (name: string): string => {
-  try {
-    const meta = (import.meta as any);
-    if (meta && meta.env && meta.env[name]) {
-      return meta.env[name];
-    }
-  } catch (e) {
-    console.warn(`Could not access import.meta.env.${name}, checking fallbacks.`);
-  }
-  
-  // Fallback to empty string if not found
-  return '';
-};
-
-const supabaseUrl = getEnvVar('VITE_SUPABASE_URL') || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
-const supabaseKey = getEnvVar('VITE_SUPABASE_ANON_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
+// Standard Vite environment variable access
+const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
+const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -56,11 +42,11 @@ export const getListings = async () => {
   return data as Listing[];
 };
 
-export const getOwnerListings = async (ownerId: string) => {
+export const getOwnerListings = async (owner_id: string) => {
   const { data, error } = await supabase
     .from('listings')
     .select('*')
-    .eq('owner_id', ownerId)
+    .eq('owner_id', owner_id)
     .order('created_at', { ascending: false });
   if (error) return [];
   return data as Listing[];
@@ -127,16 +113,23 @@ export const getMyConversations = async (userId: string) => {
 export const toggleBookmark = async (userId: string, listingId: string) => {
   const { data: existing } = await supabase
     .from('bookmarks')
-    .select('*')
+    .select('id')
     .eq('user_id', userId)
     .eq('listing_id', listingId)
-    .single();
+    .maybeSingle();
 
   if (existing) {
-    await supabase.from('bookmarks').delete().eq('id', existing.id);
+    const { error: delError } = await supabase
+      .from('bookmarks')
+      .delete()
+      .eq('id', existing.id);
+    if (delError) throw delError;
     return false;
   } else {
-    await supabase.from('bookmarks').insert([{ user_id: userId, listing_id: listingId }]);
+    const { error: insError } = await supabase
+      .from('bookmarks')
+      .insert([{ user_id: userId, listing_id: listingId }]);
+    if (insError) throw insError;
     return true;
   }
 };
