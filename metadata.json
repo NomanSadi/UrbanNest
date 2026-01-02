@@ -1,0 +1,8 @@
+{
+  "name": "UrbanNest",
+  "description": "A premium full-stack house rental platform for Bangladesh featuring AI-powered search, real-time chat, and a minimalist design inspired by modern living.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
