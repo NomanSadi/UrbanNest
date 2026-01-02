@@ -1,13 +1,40 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Listing } from '../types';
+import { supabase, toggleBookmark, getBookmarks } from '../supabase';
 
 interface ListingCardProps {
   listing: Listing;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkBookmarkStatus();
+  }, [listing.id]);
+
+  const checkBookmarkStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setUserId(session.user.id);
+      const bookmarks = await getBookmarks(session.user.id);
+      setIsBookmarked(bookmarks.includes(listing.id));
+    }
+  };
+
+  const handleBookmark = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!userId) {
+      alert("Please login to bookmark listings.");
+      return;
+    }
+    const result = await toggleBookmark(userId, listing.id);
+    setIsBookmarked(result);
+  };
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group border border-gray-100 flex flex-col h-full">
       <div className="relative h-64 overflow-hidden">
@@ -27,8 +54,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
           )}
         </div>
         <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <button className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shadow-sm">
-            🤍
+          <button 
+            onClick={handleBookmark}
+            className={`w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-all shadow-sm ${isBookmarked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+          >
+            <i className={`${isBookmarked ? 'fas' : 'far'} fa-heart text-lg`}></i>
           </button>
         </div>
         <div className="absolute bottom-4 left-4">

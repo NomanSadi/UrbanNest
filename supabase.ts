@@ -1,9 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Listing, UserProfile } from './types';
 
-// Supabase Credentials
-const supabaseUrl = 'https://zhjjexphfqnwpstzuqlr.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -26,6 +25,16 @@ export const updateProfile = async (id: string, updates: Partial<UserProfile>) =
   if (error) throw error;
 };
 
+export const getProfile = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+  if (error) return null;
+  return data;
+};
+
 /**
  * DATABASE OPERATIONS
  */
@@ -34,11 +43,7 @@ export const getListings = async () => {
     .from('listings')
     .select('*')
     .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('Error fetching listings:', error);
-    return [];
-  }
+  if (error) return [];
   return data as Listing[];
 };
 
@@ -48,11 +53,7 @@ export const getOwnerListings = async (ownerId: string) => {
     .select('*')
     .eq('owner_id', ownerId)
     .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('Error fetching owner listings:', error);
-    return [];
-  }
+  if (error) return [];
   return data as Listing[];
 };
 
@@ -61,20 +62,19 @@ export const createListing = async (listing: any) => {
     .from('listings')
     .insert([listing])
     .select();
-
-  if (error) throw new Error(`Insert Failed: ${error.message}`);
+  if (error) throw new Error(error.message);
   return data[0];
 };
 
 export const updateListing = async (id: string, updates: any) => {
-  const { id: _, created_at: __, ...cleanUpdates } = updates;
+  // CRITICAL: We MUST remove system fields before updating
+  const { id: _, created_at: __, owner_id: ___, ...cleanUpdates } = updates;
   const { data, error } = await supabase
     .from('listings')
     .update(cleanUpdates)
     .eq('id', id)
     .select();
-
-  if (error) throw new Error(`Update Failed: ${error.message}`);
+  if (error) throw new Error(error.message);
   return data[0];
 };
 
@@ -83,8 +83,7 @@ export const deleteListing = async (id: string) => {
     .from('listings')
     .delete()
     .eq('id', id);
-
-  if (error) throw new Error(`Delete Failed: ${error.message}. Hint: Ensure you have an RLS policy for Delete.`);
+  if (error) throw new Error(error.message);
 };
 
 /**
@@ -121,6 +120,35 @@ export const getMyConversations = async (userId: string) => {
 };
 
 /**
+ * BOOKMARK OPERATIONS
+ */
+export const toggleBookmark = async (userId: string, listingId: string) => {
+  const { data: existing } = await supabase
+    .from('bookmarks')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('listing_id', listingId)
+    .single();
+
+  if (existing) {
+    await supabase.from('bookmarks').delete().eq('id', existing.id);
+    return false;
+  } else {
+    await supabase.from('bookmarks').insert([{ user_id: userId, listing_id: listingId }]);
+    return true;
+  }
+};
+
+export const getBookmarks = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('bookmarks')
+    .select('listing_id')
+    .eq('user_id', userId);
+  if (error) return [];
+  return data.map(b => b.listing_id);
+};
+
+/**
  * STORAGE OPERATIONS
  */
 export const uploadImage = async (file: File) => {
@@ -132,7 +160,7 @@ export const uploadImage = async (file: File) => {
     .from('property-images')
     .upload(filePath, file);
 
-  if (uploadError) throw new Error(`Upload Failed: ${uploadError.message}`);
+  if (uploadError) throw new Error(uploadError.message);
 
   const { data } = supabase.storage
     .from('property-images')

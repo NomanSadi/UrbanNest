@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { supabase, sendMessage, getMessagesForConversation, getMyConversations } from '../supabase';
+import { supabase, sendMessage, getMessagesForConversation, getMyConversations, getProfile } from '../supabase';
 
 const Chat: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -9,6 +9,7 @@ const Chat: React.FC = () => {
   const ownerId = searchParams.get('ownerId');
   
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [otherUser, setOtherUser] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [conversations, setConversations] = useState<any[]>([]);
   const [messageText, setMessageText] = useState('');
@@ -26,7 +27,6 @@ const Chat: React.FC = () => {
       fetchConversations(session.user.id);
     });
 
-    // Real-time listener for new messages
     const channel = supabase
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
@@ -40,6 +40,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (currentUser && listingId && ownerId) {
       fetchMessages(currentUser.id, ownerId, listingId);
+      fetchOtherUserProfile(ownerId);
     }
   }, [currentUser, listingId, ownerId]);
 
@@ -47,10 +48,14 @@ const Chat: React.FC = () => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
+  const fetchOtherUserProfile = async (id: string) => {
+    const profile = await getProfile(id);
+    setOtherUser(profile);
+  };
+
   const fetchConversations = async (userId: string) => {
     try {
       const data = await getMyConversations(userId);
-      // Basic grouping for conversations list
       setConversations(data || []);
     } catch (err) {
       console.error(err);
@@ -92,8 +97,8 @@ const Chat: React.FC = () => {
                 onClick={() => navigate(`/chat?listingId=${convo.listing_id}&ownerId=${convo.sender_id === currentUser.id ? convo.receiver_id : convo.sender_id}`)}
                 className={`p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition-colors border-l-4 ${listingId === convo.listing_id ? 'bg-gray-50 border-urban-green' : 'border-transparent'}`}
              >
-                <div className="w-12 h-12 rounded-xl bg-urban-green/10 flex items-center justify-center font-bold text-urban-green">
-                  {convo.profiles?.full_name?.charAt(0) || 'U'}
+                <div className="w-12 h-12 rounded-xl bg-urban-green/10 flex items-center justify-center font-bold text-urban-green overflow-hidden">
+                  {convo.profiles?.avatar_url ? <img src={convo.profiles.avatar_url} className="w-full h-full object-cover" /> : convo.profiles?.full_name?.charAt(0) || 'U'}
                 </div>
                 <div className="flex-1 overflow-hidden">
                    <div className="font-bold text-gray-900 truncate">{convo.profiles?.full_name || 'Anonymous'}</div>
@@ -111,11 +116,13 @@ const Chat: React.FC = () => {
         {ownerId ? (
           <>
             <div className="bg-white p-4 md:p-6 border-b border-gray-100 flex items-center gap-4 shadow-sm z-10">
-               <button onClick={() => navigate('/chat')} className="md:hidden text-gray-400"><i className="fas fa-chevron-left text-xl"></i></button>
-               <div className="w-10 h-10 rounded-xl bg-urban-green/10 flex items-center justify-center font-bold text-urban-green">O</div>
+               <button onClick={() => navigate('/chat')} className="md:hidden text-gray-400 mr-2"><i className="fas fa-chevron-left text-xl"></i></button>
+               <div className="w-10 h-10 rounded-xl bg-urban-green/10 flex items-center justify-center font-bold text-urban-green overflow-hidden">
+                 {otherUser?.avatar_url ? <img src={otherUser.avatar_url} className="w-full h-full object-cover" /> : 'O'}
+               </div>
                <div>
-                 <h3 className="font-bold text-gray-900">House Owner</h3>
-                 <span className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Online Now</span>
+                 <h3 className="font-bold text-gray-900">{otherUser?.full_name || 'User'}</h3>
+                 <span className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Active Chat</span>
                </div>
             </div>
 
@@ -134,12 +141,12 @@ const Chat: React.FC = () => {
                   <input 
                     type="text" 
                     placeholder="Type your message..."
-                    className="flex-1 bg-gray-50 border-none rounded-2xl px-6 py-4"
+                    className="flex-1 bg-gray-50 border-none rounded-2xl px-6 py-4 focus:ring-2 focus:ring-urban-green/20"
                     value={messageText}
                     onChange={e => setMessageText(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' && handleSend()}
                   />
-                  <button onClick={handleSend} className="bg-urban-green text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg">
+                  <button onClick={handleSend} className="bg-urban-green text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
                     <i className="fas fa-paper-plane"></i>
                   </button>
                </div>
@@ -147,8 +154,11 @@ const Chat: React.FC = () => {
           </>
         ) : (
           <div className="text-center">
-            <i className="fas fa-comments text-5xl text-gray-200 mb-4"></i>
-            <p className="text-gray-500">Select a conversation to start chatting</p>
+            <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <i className="fas fa-comments text-3xl text-urban-green/20"></i>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900">Your Conversations</h3>
+            <p className="text-gray-400 max-w-xs mx-auto mt-2">Select a chat from the sidebar to start talking with owners.</p>
           </div>
         )}
       </div>
