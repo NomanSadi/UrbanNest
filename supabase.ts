@@ -1,10 +1,10 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Listing, UserProfile } from './types';
 
-// Use type casting to any to bypass the 'env' property check on import.meta in environments where types aren't fully configured
-const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
-const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
+// Use optional chaining to prevent crash if .env is undefined
+const metaEnv = (import.meta as any).env;
+const supabaseUrl = metaEnv?.VITE_SUPABASE_URL || 'https://zhjjexphfqnwpstzuqlr.supabase.co';
+const supabaseKey = metaEnv?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoampleHBoZnFud3BzdHp1cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzU4NTAsImV4cCI6MjA4Mjk1MTg1MH0.CK0ByLQ60yYsNp7OYZYJHNVqkZYUsd15HWvuC1IDSWY';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
