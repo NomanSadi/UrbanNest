@@ -111,7 +111,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         {/* Action Row */}
         <div className="mt-auto flex items-center justify-between gap-4 pt-6 border-t border-gray-50">
           <div className="flex flex-col">
-             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5 ml-0.5">Amount</span>
+             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5 ml-0.5">Rent</span>
              <div className="flex items-baseline gap-1">
                <span className="text-2xl font-bold text-gray-900 tracking-tight">৳{listing.rent.toLocaleString()}</span>
                <span className="text-[10px] font-semibold text-gray-400">/ month</span>

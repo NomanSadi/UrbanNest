@@ -42,8 +42,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onOpenAuth }) => {
         )}
         
         {!user ? (
-          <button onClick={onOpenAuth} className="flex items-center gap-3 bg-white text-urban-green px-6 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm font-bold uppercase tracking-widest text-[11px]">
-            <i className="fas fa-right-to-bracket text-[12px]"></i> Login
+          <button onClick={onOpenAuth} className="flex items-center gap-3 bg-white text-urban-green px-7 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm font-bold uppercase tracking-widest text-[11px] group">
+            <i className="fas fa-arrow-right-to-bracket text-[13px] group-hover:translate-x-0.5 transition-transform"></i> Login
           </button>
         ) : (
           <div className="flex items-center gap-5">

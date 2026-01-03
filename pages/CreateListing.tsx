@@ -140,7 +140,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ user }) => {
     }
     
     setLoading(true);
-    setStatusText('Starting...');
+    setStatusText('Saving data...');
     
     try {
       let finalImages = [...imagePreviews.filter(img => img.startsWith('http'))]; 
@@ -155,7 +155,6 @@ const CreateListing: React.FC<CreateListingProps> = ({ user }) => {
 
       if (finalImages.length === 0) throw new Error("At least one image is required.");
 
-      setStatusText('Saving data...');
       const listingData = {
         owner_id: user.id,
         title: formData.title,
@@ -186,70 +185,74 @@ const CreateListing: React.FC<CreateListingProps> = ({ user }) => {
       navigate(`/listing/${result.id || editId}`);
     } catch (err: any) {
       console.error("Submit Error:", err);
-      alert(err.message || "An unexpected error occurred. Please try again.");
+      // Helpful hint for the category column error
+      if (err.message.includes('category')) {
+         alert("Database Error: The 'category' column is missing from your database table. Please add it in your Supabase dashboard.");
+      } else {
+         alert(err.message || "An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 md:py-24 px-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-[40px] p-8 md:p-16 shadow-sm border border-gray-100">
-        <header className="mb-12 space-y-1">
-          <span className="text-urban-green text-[10px] font-bold uppercase tracking-[0.3em] block mb-1">Publisher Dashboard</span>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-            {editId ? 'Edit Listing' : 'Create New Ad'}
+    <div className="min-h-screen bg-[#F9FBFA] py-12 md:py-24 px-6">
+      <div className="max-w-4xl mx-auto bg-white rounded-[48px] p-8 md:p-20 shadow-sm border border-gray-100">
+        <header className="mb-16 space-y-2">
+          <span className="text-urban-green text-[11px] font-bold uppercase tracking-[0.4em] block mb-2">Publisher Dashboard</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
+            {editId ? 'Edit Listing' : 'Publish Property'}
           </h1>
         </header>
         
-        <form onSubmit={handleSubmit} className="space-y-12">
+        <form onSubmit={handleSubmit} className="space-y-16">
           {/* Photos Section */}
-          <section className="space-y-6">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Property Photos</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <section className="space-y-8">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400">Media & Visuals</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {imagePreviews.map((img, idx) => (
-                <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
+                <div key={idx} className="relative aspect-square rounded-3xl overflow-hidden group border border-gray-100 shadow-sm ring-4 ring-transparent hover:ring-urban-green/5 transition-all">
                   <img src={img} className="w-full h-full object-cover" alt="Preview" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center shadow-lg">
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center shadow-lg">
                     <i className="fas fa-times text-[10px]"></i>
                   </button>
                 </div>
               ))}
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-2 hover:border-urban-green/30 hover:bg-urban-green/5 transition-all bg-gray-50/50 group">
-                <i className="fas fa-plus text-xl text-gray-300 group-hover:text-urban-green transition-colors"></i>
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center group-hover:text-urban-green transition-colors">Add Photo</span>
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 hover:border-urban-green/30 hover:bg-urban-green/5 transition-all bg-gray-50/50 group">
+                <i className="fas fa-camera text-2xl text-gray-300 group-hover:text-urban-green transition-colors"></i>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center group-hover:text-urban-green transition-colors">Upload</span>
               </button>
             </div>
             <input type="file" ref={fileInputRef} className="hidden" multiple accept="image/*" onChange={handleImageChange} />
           </section>
 
           {/* Core Information */}
-          <section className="space-y-8">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Core Information</h3>
+          <section className="space-y-12">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400">Listing Details</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Property Title</label>
-                <input required type="text" placeholder="e.g. Modern Apartment with Lake View" className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Property Title</label>
+                <input required type="text" placeholder="e.g. Modern Lakeview Suite" className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Monthly Rent (৳)</label>
-                <input required type="number" placeholder="25,000" className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base text-urban-green" value={formData.rent || ''} onChange={e => setFormData({ ...formData, rent: Number(e.target.value) })} />
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Monthly Rent (৳)</label>
+                <input required type="number" placeholder="25,000" className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-lg text-urban-green" value={formData.rent || ''} onChange={e => setFormData({ ...formData, rent: Number(e.target.value) })} />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Square Feet (Sq Ft)</label>
-                <input required type="number" placeholder="1200" className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm" value={formData.sqft || ''} onChange={e => setFormData({ ...formData, sqft: Number(e.target.value) })} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Living Space (Sq Ft)</label>
+                <input required type="number" placeholder="1200" className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base" value={formData.sqft || ''} onChange={e => setFormData({ ...formData, sqft: Number(e.target.value) })} />
               </div>
-              {/* FIXED CATEGORY DROPDOWN */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Property Category / Type</label>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Property Type</label>
                 <div className="relative">
                   <select 
                     required 
-                    className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm appearance-none cursor-pointer" 
+                    className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base appearance-none cursor-pointer" 
                     value={formData.category} 
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                   >
@@ -259,17 +262,17 @@ const CreateListing: React.FC<CreateListingProps> = ({ user }) => {
                     <option value="House">Independent House</option>
                     <option value="Duplex">Duplex Villa</option>
                   </select>
-                  <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <div className="absolute right-7 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                     <i className="fas fa-chevron-down text-xs"></i>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">District/Area</label>
-                <select required className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm" value={formData.area} onChange={e => setFormData({ ...formData, area: e.target.value })}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Area / Neighborhood</label>
+                <select required className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base cursor-pointer" value={formData.area} onChange={e => setFormData({ ...formData, area: e.target.value })}>
                   <option value="">Select Area</option>
                   <option value="Gulshan">Gulshan</option>
                   <option value="Banani">Banani</option>
@@ -282,55 +285,55 @@ const CreateListing: React.FC<CreateListingProps> = ({ user }) => {
                   <option value="Mohammadpur">Mohammadpur</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Detailed Location</label>
-                <input required type="text" placeholder="e.g. House 12, Road 4, Sector 7" className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} />
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Specific Address</label>
+                <input required type="text" placeholder="e.g. House 12, Road 4, Sector 7" className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} />
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-8">
               {[
-                { label: 'Bedrooms', field: 'bedrooms' as const },
-                { label: 'Bathrooms', field: 'bathrooms' as const },
-                { label: 'Balconies', field: 'balconies' as const },
+                { label: 'Bedrooms', field: 'bedrooms' as const, icon: 'fa-bed' },
+                { label: 'Bathrooms', field: 'bathrooms' as const, icon: 'fa-bath' },
+                { label: 'Balconies', field: 'balconies' as const, icon: 'fa-kaaba' },
               ].map((item) => (
-                <div key={item.field} className="space-y-3 text-center">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.label}</label>
-                  <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-2 border border-gray-100">
-                    <button type="button" onClick={() => adjustCount(item.field, -1)} className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-urban-green transition active:scale-90"><i className="fas fa-minus text-[10px]"></i></button>
-                    <span className="font-bold text-gray-800 text-base">{formData[item.field]}</span>
-                    <button type="button" onClick={() => adjustCount(item.field, 1)} className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-urban-green transition active:scale-90"><i className="fas fa-plus text-[10px]"></i></button>
+                <div key={item.field} className="space-y-4">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest text-center block">{item.label}</label>
+                  <div className="flex items-center justify-between bg-gray-50 rounded-3xl p-2.5 border border-gray-100">
+                    <button type="button" onClick={() => adjustCount(item.field, -1)} className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-urban-green transition active:scale-90"><i className="fas fa-minus text-xs"></i></button>
+                    <span className="font-bold text-gray-800 text-lg">{formData[item.field]}</span>
+                    <button type="button" onClick={() => adjustCount(item.field, 1)} className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-urban-green transition active:scale-90"><i className="fas fa-plus text-xs"></i></button>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Description</label>
-                <button type="button" onClick={handleAiDescription} disabled={aiGenerating} className="text-[10px] font-bold uppercase text-urban-green bg-urban-green/10 px-4 py-2 rounded-xl hover:bg-urban-green/20 transition active:scale-95">
-                   {aiGenerating ? <><i className="fas fa-spinner animate-spin mr-2"></i> Writing...</> : <>✨ AI Magic</>}
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Property Narrative</label>
+                <button type="button" onClick={handleAiDescription} disabled={aiGenerating} className="text-[10px] font-bold uppercase text-urban-green bg-urban-green/10 px-5 py-2.5 rounded-2xl hover:bg-urban-green/20 transition active:scale-95 flex items-center gap-2">
+                   {aiGenerating ? <><i className="fas fa-spinner animate-spin"></i> Writing...</> : <>✨ AI Writer</>}
                 </button>
               </div>
-              <textarea rows={6} placeholder="Describe the atmosphere, security, and unique selling points..." className="w-full bg-gray-50 border-none rounded-[32px] px-8 py-8 focus:ring-4 focus:ring-urban-green/5 leading-relaxed text-sm font-medium" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+              <textarea rows={6} placeholder="Describe the atmosphere, security, and unique features..." className="w-full bg-gray-50 border-none rounded-[40px] px-8 py-8 focus:ring-4 focus:ring-urban-green/5 leading-relaxed text-base font-medium" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
             </div>
             
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Features & Amenities (Comma separated)</label>
-              <input type="text" placeholder="Security 24/7, Lift, Generator, Gas, Garage" className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-sm" value={formData.features} onChange={e => setFormData({ ...formData, features: e.target.value })} />
+            <div className="space-y-3">
+              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block ml-1">Key Amenities (Separated by commas)</label>
+              <input type="text" placeholder="e.g. Security 24/7, Lift, Generator, Gas, Parking" className="w-full bg-gray-50 border-none rounded-3xl px-7 py-5.5 focus:ring-4 focus:ring-urban-green/5 font-bold text-base" value={formData.features} onChange={e => setFormData({ ...formData, features: e.target.value })} />
             </div>
           </section>
 
-          <button type="submit" disabled={loading} className="w-full bg-urban-green text-white py-6 rounded-[24px] font-bold text-lg shadow-2xl shadow-urban-green/20 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 flex flex-col items-center justify-center gap-1 uppercase tracking-widest">
+          <button type="submit" disabled={loading} className="w-full bg-urban-green text-white py-7 rounded-[32px] font-bold text-xl shadow-2xl shadow-urban-green/20 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 flex flex-col items-center justify-center gap-1 uppercase tracking-[0.2em]">
             {loading ? (
               <>
-                <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin mb-1"></div>
-                <span className="text-[10px] uppercase tracking-widest">{statusText}</span>
+                <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin mb-2"></div>
+                <span className="text-[11px] font-bold uppercase tracking-widest">{statusText}</span>
               </>
             ) : (
               <>
-                <span>{editId ? 'Update Advertisement' : 'Publish Advertisement'}</span>
-                <span className="text-[9px] opacity-40 font-medium">UrbanNest - Premium Listing</span>
+                <span>{editId ? 'Update Advertisement' : 'Publish Ad Now'}</span>
+                <span className="text-[10px] opacity-40 font-bold">Premium Marketplace Listing</span>
               </>
             )}
           </button>
