@@ -70,7 +70,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         </div>
       </div>
 
-      {/* Content Section - Compact Layout with Spelled Out Features */}
+      {/* Content Section */}
       <div className="p-7 flex flex-col flex-1">
         <h3 className="font-bold text-xl text-gray-900 mb-1.5 leading-tight tracking-tight group-hover:text-urban-green transition-colors line-clamp-1">
           {listing.title}
@@ -111,10 +111,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         {/* Action Row */}
         <div className="mt-auto flex items-center justify-between gap-4 pt-6 border-t border-gray-50">
           <div className="flex flex-col">
-             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5 ml-0.5">Rent</span>
+             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5 ml-0.5">Amount</span>
              <div className="flex items-baseline gap-1">
                <span className="text-2xl font-bold text-gray-900 tracking-tight">৳{listing.rent.toLocaleString()}</span>
-               <span className="text-[10px] font-semibold text-gray-400">/ month</span>
+               <span className="text-[10px] font-semibold text-gray-400">/ per month</span>
              </div>
           </div>
 
