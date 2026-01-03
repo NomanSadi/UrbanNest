@@ -29,8 +29,6 @@ const Home: React.FC = () => {
     let matchesCategory = true;
     if (activeCategory === 'Budget') {
       matchesCategory = l.rent <= 15000;
-    } else if (activeCategory === 'Verified') {
-      matchesCategory = l.is_verified === true;
     } else if (activeCategory !== 'All') {
       matchesCategory = l.category === activeCategory;
     }
@@ -44,7 +42,6 @@ const Home: React.FC = () => {
     { name: 'Bachelors', icon: 'fa-user-graduate' },
     { name: 'Sublet', icon: 'fa-door-open' },
     { name: 'Budget', icon: 'fa-wallet' },
-    { name: 'Verified', icon: 'fa-certificate' },
   ];
 
   return (
