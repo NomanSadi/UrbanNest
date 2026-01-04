@@ -19,11 +19,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onOpenAuth }) => {
         <span className="text-2xl font-semibold tracking-tight">UrbanNest</span>
       </Link>
 
-      <div className="hidden md:flex items-center gap-8 text-[13px] font-medium tracking-tight">
+      <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
         {user && (
           <>
             <Link to="/chat" className="flex items-center gap-2 opacity-80 hover:opacity-100 transition">
               <i className="fas fa-comment-dots text-xs"></i> Chat
+            </Link>
+            <Link to="/profile?tab=saved" className="flex items-center gap-2 opacity-80 hover:opacity-100 transition">
+              <i className="fas fa-heart text-xs"></i> Saved
             </Link>
             <Link to="/profile" className="flex items-center gap-2 opacity-80 hover:opacity-100 transition">
               <i className="fas fa-user text-xs"></i> Profile
@@ -68,25 +71,28 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onOpenAuth }) => {
               <button onClick={() => setIsMenuOpen(false)} className="text-gray-400"><i className="fas fa-times text-xl"></i></button>
             </div>
             
-            <div className="flex flex-col gap-4">
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 text-gray-900 font-bold text-sm">
+            <div className="flex flex-col gap-3">
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 text-gray-900 font-bold text-xs uppercase tracking-widest">
                 <i className="fas fa-home text-urban-green"></i> Home
               </Link>
               
               {user ? (
                 <>
-                  <Link to="/chat" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 text-gray-900 font-bold text-sm">
+                  <Link to="/profile?tab=saved" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 text-gray-900 font-bold text-xs uppercase tracking-widest">
+                    <i className="fas fa-heart text-urban-green"></i> Saved Homes
+                  </Link>
+                  <Link to="/chat" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 text-gray-900 font-bold text-xs uppercase tracking-widest">
                     <i className="fas fa-comment-dots text-urban-green"></i> Chat
                   </Link>
-                  <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 text-gray-900 font-bold text-sm">
+                  <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 text-gray-900 font-bold text-xs uppercase tracking-widest">
                     <i className="fas fa-user text-urban-green"></i> Profile
                   </Link>
                   {user.role === 'owner' && (
-                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 text-gray-900 font-bold text-sm">
+                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 text-gray-900 font-bold text-xs uppercase tracking-widest">
                       <i className="fas fa-table-columns text-urban-green"></i> My Ads
                     </Link>
                   )}
-                  <button onClick={() => { onLogout(); setIsMenuOpen(false); }} className="flex items-center gap-4 p-5 rounded-2xl text-red-500 bg-red-50 font-bold text-sm text-left w-full mt-4">
+                  <button onClick={() => { onLogout(); setIsMenuOpen(false); }} className="flex items-center gap-4 p-4 rounded-2xl text-red-500 bg-red-50 font-bold text-xs uppercase tracking-widest text-left w-full mt-4">
                     <i className="fas fa-sign-out-alt"></i> Logout
                   </button>
                 </>
@@ -96,7 +102,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onOpenAuth }) => {
                   className="flex items-center gap-4 p-6 rounded-3xl bg-urban-green text-white shadow-lg shadow-urban-green/20 mt-4"
                 >
                   <i className="fas fa-user-circle text-xl"></i>
-                  <span className="font-bold uppercase tracking-widest text-xs">Login / Sign Up</span>
+                  <span className="font-bold uppercase tracking-widest text-[10px]">Login / Sign Up</span>
                 </button>
               )}
             </div>

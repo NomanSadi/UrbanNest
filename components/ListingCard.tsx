@@ -63,7 +63,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         <div className="absolute top-5 right-5">
           <button 
             onClick={handleBookmark}
-            className={`w-10 h-10 rounded-xl bg-white/95 backdrop-blur-md flex items-center justify-center transition-all shadow-md active:scale-90 ${isBookmarked ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
+            className={`w-10 h-10 rounded-xl bg-white/95 backdrop-blur-md flex items-center justify-center transition-all shadow-md active:scale-90 ${isBookmarked ? 'text-urban-green' : 'text-gray-300 hover:text-urban-green/60'}`}
           >
             <i className={`${isBookmarked ? 'fas' : 'far'} fa-heart text-sm`}></i>
           </button>

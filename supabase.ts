@@ -42,6 +42,16 @@ export const getListings = async () => {
   return data as Listing[];
 };
 
+export const getListingsByIds = async (ids: string[]) => {
+  if (!ids || ids.length === 0) return [];
+  const { data, error } = await supabase
+    .from('listings')
+    .select('*')
+    .in('id', ids);
+  if (error) return [];
+  return data as Listing[];
+};
+
 export const getOwnerListings = async (owner_id: string) => {
   const { data, error } = await supabase
     .from('listings')
